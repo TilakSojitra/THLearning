@@ -16,8 +16,3 @@ model User {
   name    String?
   password String
 }
-
-model Token {
-  id Int @id @default(autoincrement())
-  token String 
-}
