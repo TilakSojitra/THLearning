@@ -1,13 +1,10 @@
-import validateDto from '../../middlewares/validator.js'
-import express from 'express'
-import * as userController from './user.controller.js'
-import { authenticateToken } from '../../middlewares/auth.js'
+import { validateDto, ensureAuthentication } from '../../middlewares/index.js'
+import * as UserController from './user.controller.js'
 import * as userDTOs from './dtos/user.dto.js'
+import router from '../../utils/route.js'
 
-const router = express.Router()
-
-router.post('/signup', validateDto(userDTOs.validateSignupData), userController.signup)
-router.post('/login', validateDto(userDTOs.validateLoginData), userController.login)
-router.get('/users', authenticateToken, userController.getAllUsers)
+router.post('/signup', validateDto(userDTOs.validateSignupData), UserController.signup)
+router.post('/login', validateDto(userDTOs.validateLoginData), UserController.login)
+router.get('/users', ensureAuthentication, UserController.getAllUsers)
 
 export default router
