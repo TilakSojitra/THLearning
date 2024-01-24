@@ -10,4 +10,14 @@ const postDTO = {
   additionalProperties: false
 }
 
+const postUpdateDTO = {
+  type: 'object',
+  properties: {
+    title: { type: 'string' },
+    desc: { type: 'string', minLength: 10 }
+  },
+  additionalProperties: false
+}
+
 export const postData = ajvInstance.compile(postDTO)
+export const postUpdateData = ajvInstance.compile(postUpdateDTO)
