@@ -106,7 +106,13 @@ const CommentController = {
         }
       })
 
-      if (req.user.id !== postAuthor.id && req.user.id !== commentAuthor.id) {
+      const admin = parseInt(process.env.ADMIN)
+
+      // console.log(roleId)
+      // Author of the comment is admin and admin is not logged  in then anyone can not delete it or
+      // Author of the comment,Manager of post author and admin any of three is not logged In then comment can't be deleted
+
+      if ((commentAuthor.roleId === admin && req.user.roleId !== admin) || (req.user.id !== postAuthor.id && req.user.id !== commentAuthor.id && req.user.roleId !== admin && req.user.id !== postAuthor.managerId)) {
         return res.status(403).json({ msg: 'Comment can\'t be deleted by you' })
       }
 
