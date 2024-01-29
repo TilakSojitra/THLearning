@@ -18,11 +18,11 @@ const CommentController = {
         postId: post.id
       }
 
-      await prisma.comment.create({
+      const c = await prisma.comment.create({
         data: comment
       })
 
-      return res.status(200).json({ msg: 'comment created successfully' })
+      return res.status(201).json({ msg: 'comment created successfully', comment: c })
     } catch (error) {
       return res.status(500).json(error.message)
     }
@@ -42,7 +42,7 @@ const CommentController = {
         return res.status(403).json({ msg: 'Comment can\'t be edited by you' })
       }
 
-      await prisma.comment.update({
+      const c = await prisma.comment.update({
         where: {
           id: comment.id
         },
@@ -52,7 +52,7 @@ const CommentController = {
         }
       })
 
-      return res.status(200).json({ msg: 'comment edited successfully' })
+      return res.status(200).json({ msg: 'comment edited successfully', comment: c })
     } catch (error) {
       return res.status(500).json(error.message)
     }
@@ -68,7 +68,7 @@ const CommentController = {
 
       const commentAuthor = await commentService.findCommentAuthorById({ authorId: comment.authorId })
 
-      const post = await postService.findPostById(comment.postId)
+      const post = await postService.findPostById({ postId: comment.postId })
 
       const postAuthor = await postService.findPostAuthorById({ authorId: post.authorId })
 

@@ -21,3 +21,10 @@ export const authenticateToken = (request, response, next) => {
     next()
   })
 }
+
+export const adminOnly = (request, response, next) => {
+  if (request.user.roleId !== parseInt(process.env.ADMIN)) {
+    return response.status(403).json({ msg: 'You need admin right to access this' })
+  }
+  next()
+}

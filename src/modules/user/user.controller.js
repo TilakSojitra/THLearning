@@ -17,7 +17,7 @@ export const signup = async (request, response) => {
 
     const hashedPassword = await bcrypt.hash(request.body.password, 10)
 
-    await prisma.user.create({
+    const u = await prisma.user.create({
       data: {
         email: request.body.email,
         name: request.body.name,
@@ -25,7 +25,8 @@ export const signup = async (request, response) => {
       }
     })
 
-    return response.status(200).json({ msg: 'signup successful' })
+    delete u.password
+    return response.status(201).json({ msg: 'signup successful', user: u })
   } catch (error) {
     return response.status(500).json(error.message)
   }

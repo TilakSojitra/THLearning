@@ -1,8 +1,5 @@
 import prisma from '../../utils/prisma-client.js'
-import dotenv from 'dotenv'
 import { postService } from './posts.module.js'
-
-dotenv.config()
 
 const PostController = {
 
@@ -13,11 +10,11 @@ const PostController = {
         authorId: req.user.id
       }
 
-      await prisma.post.create({
+      const p = await prisma.post.create({
         data: post
       })
 
-      return res.status(200).json({ msg: 'post created successfully' })
+      return res.status(201).json({ msg: 'post created successfully', post: p })
     } catch (error) {
       return res.status(500).json(error.message)
     }
@@ -35,7 +32,7 @@ const PostController = {
         return res.status(403).json({ msg: 'Post can\'t be updated by you' })
       }
 
-      await prisma.post.update({
+      const p = await prisma.post.update({
         where: {
           id: post.id
         },
@@ -45,7 +42,7 @@ const PostController = {
         }
       })
 
-      return res.status(200).json({ msg: 'post edited successfully' })
+      return res.status(200).json({ msg: 'post edited successfully', post: p })
     } catch (error) {
       return res.status(500).json(error.message)
     }

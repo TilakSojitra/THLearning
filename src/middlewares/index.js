@@ -1,7 +1,8 @@
-import { authenticateToken as ensureAuthentication } from './auth.js'
+import { authenticateToken as ensureAuthentication, adminOnly as isAdmin } from './auth.js'
 import validateDto from './validator.js'
 
 export {
   ensureAuthentication,
-  validateDto
+  validateDto,
+  isAdmin
 }
