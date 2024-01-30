@@ -64,9 +64,16 @@ const AdminController = {
 
   makeManager: async (req, res) => {
     try {
-      const user = await userService.findUserById({ userId: parseInt(req.params.id) })
+      const managerId = req.body.managerId
+      const uId = parseInt(req.params.id)
 
-      const manager = await userService.findUserById({ userId: req.body.managerId })
+      if (managerId === undefined || req.body.managerId === uId) {
+        return res.status(400).json({ msg: 'Invalid Manager Id' })
+      }
+
+      const user = await userService.findUserById({ userId: uId })
+
+      const manager = await userService.findUserById({ userId: managerId })
 
       if (!user) {
         return res.status(404).json({ msg: 'user not found' })

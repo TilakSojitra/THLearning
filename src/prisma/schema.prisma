@@ -16,6 +16,7 @@ model User {
   name      String?
   password  String
   roleId    Int       @default(0)
+  role      Role      @relation(fields: [roleId], references: [id])
   managerId Int?
   manager   User?     @relation("ReportsTo", fields: [managerId], references: [id])
   Posts     Post[]
@@ -24,8 +25,9 @@ model User {
 }
 
 model Role {
-  id   Int    @id @default(autoincrement())
-  name String
+  id    Int    @id @default(autoincrement())
+  Users User[]
+  name  String
 }
 
 model Post {
