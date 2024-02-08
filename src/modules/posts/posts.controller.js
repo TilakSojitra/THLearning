@@ -70,6 +70,12 @@ const PostController = {
     })
 
     return res.status(204)
+  },
+
+  getPosts: async (req, res) => {
+    const posts = await prisma.post.findMany()
+
+    return res.status(200).json(Response(200, posts, []))
   }
 }
 

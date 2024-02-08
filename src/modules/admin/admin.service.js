@@ -1,13 +1,19 @@
 import prisma from '../../utils/prisma-client.js'
+import Response from '../../utils/response.js'
 import { userService } from '../user/user.module.js'
 
 const AdminService = {
   assignAdmin: async (req, res) => {
-    const user = await await userService.findUserById({ userId: parseInt(req.params.id) })
+    const user = await userService.findUserById({ userId: parseInt(req.params.id) })
     const admin = parseInt(process.env.ADMIN)
+    const manager = parseInt(process.env.MANAGER)
 
     if (!user) {
-      return res.status(404).json({ msg: 'user not found' })
+      return res.status(404).json(Response(404, [], ['user not found']))
+    }
+
+    if (user.roleId === manager) {
+      AdminService.removeManager(req, res)
     }
 
     const u = await prisma.user.update({
@@ -19,11 +25,12 @@ const AdminService = {
       }
     })
 
-    return res.status(200).json({
-      msg: 'admin assigned successfully',
+    return res.status(200).json(Response(200, {
       email: u.email,
       roleId: u.roleId
-    })
+    }
+    , []
+    ))
   },
 
   removeAdmin: async (req, res) => {
@@ -32,15 +39,15 @@ const AdminService = {
 
     const User = parseInt(process.env.USER)
     if (!user) {
-      return res.status(404).json({ msg: 'user not found' })
+      return res.status(404).json(Response(404, [], ['user not found']))
     }
 
     if (user.id === req.user.id) {
-      return res.status(403).json({ msg: 'you can\'t remove yourself from admin!!' })
+      return res.status(403).json(Response(403, [], ['you can\'t remove yourself from admin!!']))
     }
 
     if (user.roleId !== admin) {
-      return res.status(400).json({ msg: 'User is not admin' })
+      return res.status(400).json(Response(400, [], ['User is not adn admin']))
     }
 
     const u = await prisma.user.update({
@@ -52,20 +59,20 @@ const AdminService = {
       }
     })
 
-    return res.status(200).json({
-      msg: 'admin removed successfully',
+    return res.status(200).json(Response(200, {
       email: u.email,
       roleId: u.roleId
-    })
+    }, []))
   },
 
   makeManager: async (req, res) => {
     const managerId = req.body.managerId
     const uId = parseInt(req.params.id)
+    const admin = parseInt(process.env.ADMIN)
 
     // user and their manager cannot be same
     if (managerId === undefined || req.body.managerId === uId) {
-      return res.status(400).json({ msg: 'Invalid Manager Id' })
+      return res.status(400).json(Response(400, [], ['Invalid Manager Id']))
     }
 
     const user = await userService.findUserById({ userId: uId })
@@ -73,11 +80,15 @@ const AdminService = {
     const manager = await userService.findUserById({ userId: managerId })
 
     if (!user) {
-      return res.status(404).json({ msg: 'user not found' })
+      return res.status(404).json(Response(404, [], ['user not found']))
     }
 
     if (!manager) {
-      return res.status(404).json({ msg: 'manager not found' })
+      return res.status(404).json(Response(404, [], ['manager not found']))
+    }
+
+    if (user.roleId === admin) {
+      return res.status(400).json(Response(400, [], ['Admin can not be manager']))
     }
 
     const u = await prisma.user.update({
@@ -98,49 +109,44 @@ const AdminService = {
       }
     })
 
-    return res.status(200).json({
+    return res.status(200).json(Response(200, {
       msg: 'manager assigned successfully',
       email: u.email,
       managerId: u.managerId
-    })
+    }, []))
   },
 
   removeManager: async (req, res) => {
     const user = await userService.findUserById({ userId: parseInt(req.params.id) })
+    const User = parseInt(process.env.USER)
 
     if (!user) {
-      return res.status(404).json({ msg: 'user not found' })
+      return res.status(404).json(Response(404, [], ['user not found']))
     }
-
-    if (user.managerId === null) {
-      return res.json({ msg: 'User has not been assigned any manager previosuly' })
-    }
-
-    const manager = await userService.findUserById({ userId: user.managerId })
 
     const u = await prisma.user.update({
       where: {
         id: user.id
       },
       data: {
+        roleId: User
+      }
+    })
+
+    await prisma.user.updateMany({
+      where: {
+        managerId: user.id
+      },
+      data: {
         managerId: null
       }
     })
 
-    await prisma.user.update({
-      where: {
-        id: manager.id
-      },
-      data: {
-        roleId: parseInt(process.env.USER)
-      }
-    })
-
-    return res.status(200).json({
+    return res.status(200).json(Response(200, {
       msg: 'manager removed successfully',
       email: u.email,
-      managerId: u.managerId
-    })
+      roleId: u.roleId
+    }, []))
   }
 }
 

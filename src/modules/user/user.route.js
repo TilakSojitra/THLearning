@@ -5,6 +5,7 @@ import router from '../../utils/route.js'
 
 router.post('/signup', validateDto(userDTOs.validateSignupData), UserController.signup)
 router.post('/login', validateDto(userDTOs.validateLoginData), UserController.login)
+router.get('/user', [ensureAuthentication], UserController.getUser)
 router.get('/users', [ensureAuthentication, isAdmin], UserController.getAllUsers)
 
 export default router

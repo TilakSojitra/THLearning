@@ -12,7 +12,7 @@ export const signup = async (request, response) => {
   })
 
   if (user) {
-    return response.status(409).json({ msg: 'email already exist' })
+    return response.status(409).json(Response(409, [], ['Email already exist']))
   }
 
   const hashedPassword = await bcrypt.hash(request.body.password, 10)
@@ -55,7 +55,8 @@ export const login = async (request, response) => {
         accessToken,
         refreshToken,
         name: user.name,
-        email: user.email
+        email: user.email,
+        roleId: user.roleId
       },
       []))
   } else {
@@ -70,4 +71,8 @@ export const getAllUsers = async (request, response) => {
 
   users.forEach((user) => delete user.password)
   return response.status(200).json(Response(200, users, []))
+}
+
+export const getUser = (req, res) => {
+  return res.status(200).json(Response(200, req.user, []))
 }

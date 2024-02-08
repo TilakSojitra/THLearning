@@ -6,5 +6,6 @@ import { PostController } from './posts.module.js'
 router.post('/posts', [ensureAuthentication, validateDto(postDTO.postData)], PostController.createPost)
 router.patch('/posts/:id', [ensureAuthentication, validateDto(postDTO.postUpdateData)], PostController.editPost)
 router.delete('/posts/:id', [ensureAuthentication], PostController.deletePost)
+router.get('/posts', [ensureAuthentication], PostController.getPosts)
 
 export default router
