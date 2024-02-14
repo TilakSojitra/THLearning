@@ -29,3 +29,10 @@ export const adminOnly = (request, response, next) => {
   }
   next()
 }
+
+export const managerOnly = (request, response, next) => {
+  if (request.user.roleId !== parseInt(process.env.MANAGER)) {
+    return response.status(403).json(Response(403, [], ['You need manager right to access this']))
+  }
+  next()
+}

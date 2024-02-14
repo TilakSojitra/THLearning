@@ -19,7 +19,7 @@ const signupDTO = {
       minLength: 3,
       errorMessage: {
         type: 'name must be a string only',
-        minLength: 'Minumum length of a name should be 3'
+        minLength: 'Minimum length of a name should be 3'
       }
     },
     password: {

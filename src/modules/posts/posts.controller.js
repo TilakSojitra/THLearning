@@ -1,5 +1,6 @@
 import prisma from '../../utils/prisma-client.js'
 import Response from '../../utils/response.js'
+import { userService } from '../user/user.module.js'
 import { postService } from './posts.module.js'
 
 const PostController = {
@@ -69,11 +70,26 @@ const PostController = {
       }
     })
 
-    return res.status(204)
+    return res.status(204).json(Response(204, [], []))
   },
 
   getPosts: async (req, res) => {
-    const posts = await prisma.post.findMany()
+    const userId = parseInt(req.query.userId)
+
+    let posts
+    if (!isNaN(userId)) {
+      const user = userService.findUserById({ userId })
+      if (!user) {
+        return res.status(404).json(Response(404, [], ['User not found']))
+      }
+      posts = await prisma.post.findMany({
+        where: {
+          authorId: userId
+        }
+      })
+    } else {
+      posts = await prisma.post.findMany()
+    }
 
     return res.status(200).json(Response(200, posts, []))
   }

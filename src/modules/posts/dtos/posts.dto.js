@@ -36,9 +36,11 @@ const postUpdateDTO = {
     title: {
       type: 'string',
       minLength: 3,
+      maxLength: 20,
       errorMessage: {
         type: 'title must be a string',
-        minLength: 'Min length of a title must be 3'
+        minLength: 'Min length of a title must be 3',
+        maxLength: 'Max length of a title must be less than or equal to 20'
       }
     },
     desc: {

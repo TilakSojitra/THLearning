@@ -87,7 +87,25 @@ const CommentController = {
       }
     })
 
-    return res.status(204)
+    return res.status(204).json((Response(204, [], [])))
+  },
+
+  getCommentsByPostId: async (req, res) => {
+    const pId = parseInt(req.params.id)
+
+    const post = await postService.findPostById({ postId: pId })
+
+    if (!post) {
+      return res.status(404).json(Response(404, [], ['post not found']))
+    }
+
+    const comments = await prisma.comment.findMany({
+      where: {
+        postId: pId
+      }
+    })
+
+    return res.status(200).json(Response(200, comments, []))
   }
 }
 
